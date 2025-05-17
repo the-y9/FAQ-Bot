@@ -1,11 +1,12 @@
-# main.py
-from faq_bot import FAQBot
+import importlib
+import sys
+import os
+v = 'v2'
+v1_path = os.path.join(os.path.dirname(__file__), v)
+sys.path.append(v1_path)
 
-bot = FAQBot()
-print("Welcome to the FAQ Bot! Type 'exit' or 'quit' to end the conversation.")
-while True:
-    user_input = input("You: ")
-    if user_input.lower() in {"exit", "quit"}:
-        break
-    answer = bot.get_answer(user_input)
-    print("Bot:", answer)
+# Dynamically import the module
+v_main = importlib.import_module(f'{v}.main')
+
+if hasattr(v_main, 'main'):
+    v_main.main()

@@ -2,6 +2,7 @@
 
 faq_data = [
     {"q": "Hi", "a": "Hello! How can I assist you today?"},
+    {"q": "Bye", "a": "Type 'exit' or 'quit' to end the conversation."},
     {"q": "What is your purpose?", "a": "I am here to answer your frequently asked questions."},
     {"q": "How can I help you?", "a": "You can ask me any question related to our services."},
     {"q": "Tell me a joke", "a": "Why did the scarecrow win an award? Because he was outstanding in his field!"},
