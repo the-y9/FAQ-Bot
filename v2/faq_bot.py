@@ -1,8 +1,9 @@
 # faq_bot.py
 from sentence_transformers import SentenceTransformer, util
-from faq_data import faq_data
+from v2.faq_data import faq_data
 from typing import TypedDict
 from torch import Tensor
+from v2.viz_utils import visualize_embeddings_cosine
 
 # Initialize the SentenceTransformer model
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -40,6 +41,14 @@ def match_faq(state: FAQState) -> FAQState:
     best_idx = max(range(len(scores)), key=lambda i: scores[i])
     best_score = scores[best_idx]
 
+    # OPTIONAL: Visualize user vs match
+    visualize_embeddings_cosine(
+    user_embedding=user_embedding,
+    matched_embedding=faq_data[best_idx]["embedding"],
+    labels=["User Input", "Matched Question"]
+)
+
+    
     # If the best score is above a threshold (0.6 here), return the corresponding answer
     if best_score >= 0.3:
         answer = faq_data[best_idx]["a"]
