@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import torch
 from typing import List
+import numpy as np
 
 def visualize_embeddings_cosine(
     user_embedding: torch.Tensor,
@@ -21,6 +22,12 @@ def visualize_embeddings_cosine(
     user_vec = user_embedding / user_embedding.norm()
     match_vec = matched_embedding / matched_embedding.norm()
 
+    # Cosine similarity between normalized embeddings
+    cos_sim = torch.dot(user_vec, match_vec).item()
+    
+    # Calculate the angle in degrees from cosine similarity
+    angle_deg = np.degrees(np.arccos(cos_sim))
+
     # Choose user_vec as x-axis, project the other into 2D plane for angle
     x_axis = user_vec
     # Random vector orthogonal to x_axis
@@ -32,9 +39,6 @@ def visualize_embeddings_cosine(
     user_proj = torch.tensor([user_vec.dot(x_axis), user_vec.dot(y_axis)])
     match_proj = torch.tensor([match_vec.dot(x_axis), match_vec.dot(y_axis)])
 
-    # Cosine similarity between normalized embeddings
-    cos_sim = torch.dot(user_vec, match_vec).item()
-
     # Plot
     fig, ax = plt.subplots()
     ax.quiver(0, 0, user_proj[0], user_proj[1], angles='xy', scale_units='xy', scale=1, color='blue', label=labels[0])
@@ -44,13 +48,14 @@ def visualize_embeddings_cosine(
     ax.annotate(labels[0], (user_proj[0], user_proj[1]), fontsize=11, color='blue', textcoords="offset points", xytext=(5,5))
     ax.annotate(labels[1], (match_proj[0], match_proj[1]), fontsize=11, color='green', textcoords="offset points", xytext=(5,5))
 
-    # Set title with cosine similarity
-    ax.set_title(f"{title}\nCosine Similarity: {cos_sim:.2f}")
+    # Set title with cosine similarity and angle
+    ax.set_title(f"{title}\nCosine Similarity: {cos_sim:.2f} (~{angle_deg:.2f}°)")
     ax.set_xlabel("Component 1 (User-Aligned)")
     ax.set_ylabel("Orthogonal Component")
     ax.grid(True)
     ax.legend()
- # Dynamically adjust x and y limits based on the vectors' magnitude
+
+    # Dynamically adjust x and y limits based on the vectors' magnitude
     max_magnitude = max(user_proj.norm().item(), match_proj.norm().item())  # Find max vector magnitude
     margin = 0.2  # Add some margin for visualization
     ax.set_xlim(-max_magnitude - margin, max_magnitude + margin)

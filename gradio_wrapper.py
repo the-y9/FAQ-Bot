@@ -43,13 +43,23 @@ def main_gradio():
         return chat["answer"], pil_img  # Return both the FAQ answer and the image of the cosine similarity
 
     # Create Gradio interface
-    demo = gr.Interface(fn=answer_question, 
-                        inputs="text", 
-                        outputs=["text", "image"],  # Output both text (answer) and image (cosine plot)
-                        title="FAQ Bot with Cosine Similarity Visualization",
-                        description="Ask a frequently asked question, and get the best matching answer with a visualization of cosine similarity between your question and the matched answer.")
+    with gr.Blocks() as demo:
+        # Define the left and right columns
+        with gr.Row():
+            with gr.Column(scale=1):  # Left side - Chat
+                gr.Markdown("### FAQ Bot - Ask a Question")
+                chat_input = gr.Textbox(label="Ask your question", placeholder="Type here...")
+                chat_output = gr.Textbox(label="Answer", interactive=False)
 
-    demo.launch()
+            with gr.Column(scale=1):  # Right side - Image visualization
+                gr.Markdown("### Cosine Similarity Visualization")
+                cosine_image = gr.Image(label="Cosine Similarity Plot", interactive=False)
+
+        # Link the inputs and outputs
+        chat_input.submit(answer_question, inputs=chat_input, outputs=[chat_output, cosine_image])
+
+    # Launch the Gradio interface
+    demo.launch(pwa=True)
 
 # This is used to only launch Gradio if this script is run directly
 if __name__ == "__main__":
