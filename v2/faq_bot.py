@@ -53,7 +53,7 @@ def match_faq(state: FAQState) -> FAQState:
     if best_score >= 0.3:
         answer = faq_data[best_idx]["a"]
     else:
-        answer = "Sorry, I couldn't find an answer to that question."
+        answer = "Sorry, I couldn't find an answer to that question. Type 'exit' or 'quit' to end the conversation."
 
     return {"question": user_question, "answer": answer}
 
