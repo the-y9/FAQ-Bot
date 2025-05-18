@@ -1,4 +1,4 @@
-# main.py
+# v2/main.py
 from v2.faq_bot import FAQBot
 
 def main():
