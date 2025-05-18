@@ -58,6 +58,8 @@ def visualize_embeddings_cosine(
 
     # Ensure equal scaling on both axes
     ax.set_aspect('equal')
-    
+
     plt.tight_layout()
     plt.show()
+
+    return fig

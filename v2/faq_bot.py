@@ -1,4 +1,4 @@
-# faq_bot.py
+# v2/faq_bot.py
 from sentence_transformers import SentenceTransformer, util
 from v2.faq_data import faq_data
 from typing import TypedDict
@@ -55,7 +55,7 @@ def match_faq(state: FAQState) -> FAQState:
     else:
         answer = "Sorry, I couldn't find an answer to that question. Type 'exit' or 'quit' to end the conversation."
 
-    return {"question": user_question, "answer": answer}
+    return {"question": user_question, "answer": answer}, user_embedding, faq_data[best_idx]["embedding"] # matched_embedding
 
 # FAQBot class for handling interactions
 class FAQBot:
@@ -66,4 +66,5 @@ class FAQBot:
     def get_answer(self, user_input: str) -> str:
         # Ensure the state is typed correctly as FAQState
         state: FAQState = {"question": user_input, "answer": ""}
-        return match_faq(state)["answer"]
+        chat, user_embedding, matched_embedding = match_faq(state)
+        return chat, user_embedding, matched_embedding

@@ -1,4 +1,5 @@
 # v2/main.py
+import json
 from v2.faq_bot import FAQBot
 
 def main():
@@ -17,7 +18,8 @@ def main():
             break
         
         # Get the bot's response
-        answer = bot.get_answer(user_input)
+        chat, user_embedding, matched_embedding = bot.get_answer(user_input)
+        answer = chat["answer"]
         print("Bot:", answer)  # Output the bot's response
 
 if __name__ == "__main__":
