@@ -2,8 +2,6 @@
 from v2.faq_bot import FAQBot
 from v2.viz_utils import visualize_embeddings_cosine
 import gradio as gr
-import matplotlib.pyplot as plt
-import numpy as np
 from io import BytesIO
 from PIL import Image
 
@@ -162,7 +160,7 @@ If the **blue** and **red arrows** are exactly same (cosine similarity = 1, with
         chat_input.submit(answer_question, inputs=chat_input, outputs=[chat_output, cosine_image])
         submit_btn.click(answer_question, inputs=chat_input, outputs=[chat_output, cosine_image])
     # Launch the Gradio interface
-    demo.launch(server_name="0.0.0.0", server_port=8080, pwa=True)
+    demo.launch(server_name="0.0.0.0", server_port=10000, pwa=True)
 
 # This is used to only launch Gradio if this script is run directly
 if __name__ == "__main__":
