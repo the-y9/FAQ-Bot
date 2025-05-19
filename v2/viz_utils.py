@@ -1,3 +1,4 @@
+# viz_utils.py
 import matplotlib.pyplot as plt
 import torch
 from typing import List
@@ -39,14 +40,31 @@ def visualize_embeddings_cosine(
     user_proj = torch.tensor([user_vec.dot(x_axis), user_vec.dot(y_axis)])
     match_proj = torch.tensor([match_vec.dot(x_axis), match_vec.dot(y_axis)])
 
+    # Rotate user_proj by angle_deg to get a new vector
+    angle_rad = np.radians(angle_deg)
+    rotation_matrix = torch.tensor([
+        [np.cos(angle_rad), -np.sin(angle_rad)],
+        [np.sin(angle_rad),  np.cos(angle_rad)]
+    ], dtype=torch.float32)
+
+    rotated_vec = torch.matmul(rotation_matrix, user_proj)
+    # 🔄 Rescale rotated vector to match match_proj's norm
+    rotated_vec = rotated_vec / rotated_vec.norm() * match_proj.norm()
+
+
+
     # Plot
     fig, ax = plt.subplots()
     ax.quiver(0, 0, user_proj[0], user_proj[1], angles='xy', scale_units='xy', scale=1, color='blue', label=labels[0])
-    ax.quiver(0, 0, match_proj[0], match_proj[1], angles='xy', scale_units='xy', scale=1, color='green', label=labels[1])
+    # ax.quiver(0, 0, match_proj[0], match_proj[1], angles='xy', scale_units='xy', scale=1, color='green', label=labels[1])
+    # Add rotated vector to the plot
+    ax.quiver(0, 0, rotated_vec[0], rotated_vec[1], angles='xy', scale_units='xy', scale=1, color='red', label=labels[1])
+    ax.annotate('Rotated', (rotated_vec[0], rotated_vec[1]), fontsize=11, color='red', textcoords="offset points", xytext=(5,5))
+
 
     # Annotate labels
     ax.annotate(labels[0], (user_proj[0], user_proj[1]), fontsize=11, color='blue', textcoords="offset points", xytext=(5,5))
-    ax.annotate(labels[1], (match_proj[0], match_proj[1]), fontsize=11, color='green', textcoords="offset points", xytext=(5,5))
+    # ax.annotate(labels[1], (match_proj[0], match_proj[1]), fontsize=11, color='green', textcoords="offset points", xytext=(5,5))
 
     # Set title with cosine similarity and angle
     ax.set_title(f"{title}\nCosine Similarity: {cos_sim:.2f} (~{angle_deg:.2f}°)")
@@ -58,8 +76,8 @@ def visualize_embeddings_cosine(
     # Dynamically adjust x and y limits based on the vectors' magnitude
     max_magnitude = max(user_proj.norm().item(), match_proj.norm().item())  # Find max vector magnitude
     margin = 0.2  # Add some margin for visualization
-    ax.set_xlim(-max_magnitude - margin, max_magnitude + margin)
-    ax.set_ylim(-max_magnitude - margin, max_magnitude + margin)
+    ax.set_xlim(- margin, max_magnitude + margin)
+    ax.set_ylim(- margin, max_magnitude + margin)
 
     # Ensure equal scaling on both axes
     ax.set_aspect('equal')
