@@ -1,3 +1,4 @@
+# gradio_wrapper.py
 from v2.faq_bot import FAQBot
 from v2.viz_utils import visualize_embeddings_cosine
 import gradio as gr
@@ -47,20 +48,20 @@ def main_gradio():
     /* Background color and padding */
     .gradio-container {
         background-color: #f7f7f7;
-        padding: 30px;
+        padding: 20px;
     }
 
     /* Styling for the header */
     .gr-markdown h1 {
         text-align: center;
-        font-size: 2.5rem;
+        font-size: 5rem;
         color: #4CAF50;
         margin-bottom: 20px;
     }
 
     .gr-markdown h2 {
         text-align: center;
-        font-size: 2rem;
+        font-size: 3rem;
         color: #333;
         margin-bottom: 15px;
     }
@@ -129,7 +130,7 @@ def main_gradio():
     """
 
     # Create Gradio interface
-    with gr.Blocks(css=css) as demo:
+    with gr.Blocks(css=css, title="FAQ Bot") as demo:
         gr.Markdown("# FAQ Bot with Cosine Similarity Visualization")
         gr.Markdown("Ask a question and see the cosine similarity between your input and the matched question.")    
 
@@ -138,22 +139,16 @@ def main_gradio():
             with gr.Column(scale=1):  # Left side - Chat
                 gr.Markdown("### FAQ Bot - Ask a Question")
                 chat_input = gr.Textbox(label="Ask your question", placeholder="Type here...", interactive=True)
+                submit_btn = gr.Button("Get Answer")
                 chat_output = gr.Textbox(label="Answer", interactive=False)
                 gr.Markdown(value="""
 ### ℹ️ Embedding Visualization
 
-This plot compares a query to its matched entry using AI-generated embeddings.
-
+This plot compares a query to its matched entry using embeddings.
 * 🔵 **Blue Arrow** – Represents the user query, normalized to unit length.
 * 🔴 **Red Arrow** – Represents the matched query from the dataset.
-
-#### Key Concepts:
-
 * **Cosine Similarity**: The cosine similarity between the blue and red arrows indicates how **semantically similar** the queries are. A value close to 1 means the queries are highly similar.
-
 * **Length = Confidence**: The length of the red arrow indicates how **strong** or **meaningful** the match is. Longer = clearer match, shorter = weaker match.
-
-#### Perfect Match:
 
 If the **blue** and **red arrows** are exactly same (cosine similarity = 1, with equal lengths), it means the model found a **perfect match** for the user query in the data. For example, the query "hi" produces the same vector.
 
@@ -165,9 +160,9 @@ If the **blue** and **red arrows** are exactly same (cosine similarity = 1, with
 
         # Link the inputs and outputs
         chat_input.submit(answer_question, inputs=chat_input, outputs=[chat_output, cosine_image])
-
+        submit_btn.click(answer_question, inputs=chat_input, outputs=[chat_output, cosine_image])
     # Launch the Gradio interface
-    demo.launch(pwa=True)
+    demo.launch(server_name="0.0.0.0", server_port=8080, pwa=True)
 
 # This is used to only launch Gradio if this script is run directly
 if __name__ == "__main__":

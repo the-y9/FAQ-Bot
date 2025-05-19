@@ -59,7 +59,7 @@ def visualize_embeddings_cosine(
     # ax.quiver(0, 0, match_proj[0], match_proj[1], angles='xy', scale_units='xy', scale=1, color='green', label=labels[1])
     # Add rotated vector to the plot
     ax.quiver(0, 0, rotated_vec[0], rotated_vec[1], angles='xy', scale_units='xy', scale=1, color='red', label=labels[1])
-    ax.annotate('Rotated', (rotated_vec[0], rotated_vec[1]), fontsize=11, color='red', textcoords="offset points", xytext=(5,5))
+    ax.annotate(labels[1], (rotated_vec[0], rotated_vec[1]), fontsize=11, color='red', textcoords="offset points", xytext=(5,5))
 
 
     # Annotate labels
