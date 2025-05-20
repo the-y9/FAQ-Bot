@@ -219,7 +219,7 @@ img {
     <h1>FAQ Bot with Cosine Similarity Visualization</h1>
   </header>
   <a href="#main" class="skip-link">Skip to Bot</a>
-    <div class="insights">
+    <div class="insights"><justify>
         <h3>ℹ️ Embedding Visualization</h3>
         <p>This plot compares a query to its matched entry using embeddings.</p>
         <ul>
@@ -231,7 +231,13 @@ img {
         <p>If the <b>blue</b> and <b>red arrows</b> are exactly same (cosine similarity = 1, with equal lengths), it means the model found a <i>perfect match</i> for the user query in the data. For example, the query "hi" produces the same vector.</p>
         <p>Threshold for cosine similarity is set to 0.3. If the cosine similarity is below this threshold, the model will return a default answer.</p>
         <a href="https://medium.com/@ymishra975/when-0-6-fails-but-0-3-works-like-magic-a-curious-case-in-semantic-search-for-chatbots-9c1a55174b9b" target="_blank">Why such a low threshold?</a>
+        </justify>
     </div>
+    <div id="additional-info">
+        <p>Render may be slow, you may like to check <a href="https://github.com/the-y9/FAQ-Bot/blob/main/v1/faq_data.py" target="_blank">data</a>.
+        </p>
+    </div>  
+    <div id="error"></div>
   <main id="main">
     <div class="container">
         
@@ -262,12 +268,14 @@ async function getAnswer() {
     const loadingIndicator = document.getElementById("loading");
     const answerElement = document.getElementById("answer");
     const cosinePlotElement = document.getElementById("cosine-plot");
+    const errorElement = document.getElementById("error");
 
     const question = questionInput.value;
     if (!question) return;
 
     answerElement.innerText = "Bot: ";
     cosinePlotElement.src = "";
+    errorElement.innerText = "";
 
     // Show loading indicator
     loadingIndicator.style.display = "block";
@@ -295,6 +303,7 @@ async function getAnswer() {
 
     } catch (error) {
         console.error("Error:", error);
+        errorElement.innerText = "Please try again with hard refresh (Ctrl+Shift+R).";
         answerElement.innerText = "Error: " + error.message;
     } finally {
         // Hide loading indicator
