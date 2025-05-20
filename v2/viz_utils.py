@@ -83,6 +83,6 @@ def visualize_embeddings_cosine(
     ax.set_aspect('equal')
 
     plt.tight_layout()
-    plt.show()
+    # plt.show()
 
     return fig
