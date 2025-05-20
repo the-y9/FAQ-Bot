@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="style.css" />
+  <title>FAQ Bot with Cosine Visualization</title>
+  <script>
+    fetch("https://faq-bot-u90z.onrender.com/", {
+      method: "GET",
+      mode: "no-cors"
+    }).then(() => {
+      console.log("Early cold start ping sent.");
+    }).catch((err) => {
+      console.log("Ping error:", err);
+    });
+  </script>
+</head>
+<body>
+
+  <header>
+    <h1>FAQ Bot with Cosine Similarity Visualization</h1>
+  </header>
+  <a href="#main" class="skip-link">Skip to Bot</a>
+    <div class="insights">
+        <h3>ℹ️ Embedding Visualization</h3>
+        <p>This plot compares a query to its matched entry using embeddings.</p>
+        <ul>
+        <li>🔵 <strong>Blue Arrow</strong>: Normalized user query vector</li>
+        <li>🔴 <strong>Red Arrow</strong>: Matched FAQ vector</li>
+        <li><strong>Cosine Similarity</strong>: The cosine similarity between the blue and red arrows indicates how <b>semantically similar</b> the queries are. A value close to 1 means the queries are highly similar.</li>
+        <li><strong>Length = Confidence</strong>: The length of the red arrow indicates how <b>confident</b> the model is. Longer = clearer match, shorter = weaker match.</li>
+        </ul>
+        <p>If the <b>blue</b> and <b>red arrows</b> are exactly same (cosine similarity = 1, with equal lengths), it means the model found a <i>perfect match</i> for the user query in the data. For example, the query "hi" produces the same vector.</p>
+        <p>Threshold for cosine similarity is set to 0.3. If the cosine similarity is below this threshold, the model will return a default answer.</p>
+        <a href="https://medium.com/@ymishra975/when-0-6-fails-but-0-3-works-like-magic-a-curious-case-in-semantic-search-for-chatbots-9c1a55174b9b" target="_blank">Why such a low threshold?</a>
+    </div>
+  <main id="main">
+    <div class="container">
+        
+      <div class="left">
+          <div class="input-container">
+              <label for="question"><strong>Ask your question:</strong></label>
+              <input type="text" id="question" placeholder="Type your question here..." />
+              <button onclick="getAnswer()">Get Answer</button>
+              <div id="loading" class="loading" style="display: none;">Loading...</div>
+              <div id="answer"></div>
+          </div>
+
+          
+      </div>
+
+      <div class="right">
+        <img id="cosine-plot" src="" alt="Cosine Similarity Plot" />
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
