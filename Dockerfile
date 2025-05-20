@@ -1,32 +1,47 @@
-# Stage 1: Build dependencies
+# --- Stage 1: Build dependencies ---
 FROM python:3.10-slim AS builder
 
 WORKDIR /app
 
-# Install system dependencies for building libraries like matplotlib
+# Install system packages required for building scientific libraries
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libatlas-base-dev \
+    gcc \
+    g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the requirements file and install dependencies into a virtual environment
+# Copy only the requirements file
 COPY requirements.txt .
-RUN pip install --upgrade pip && \
-    pip install --prefix=/install -r requirements.txt
 
-# Stage 2: Final image (runtime)
+# Create a virtual environment and install dependencies there
+RUN python -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+# --- Stage 2: Runtime image ---
 FROM python:3.10-slim
+
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 WORKDIR /app
 
-# Copy installed Python dependencies from the builder stage
-COPY --from=builder /install /usr/local
+# Install only runtime libraries needed (not compilers)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libatlas-base-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy the FastAPI app and any necessary files (like frontend folder)
-COPY . .
+# Copy virtual environment from builder stage
+COPY --from=builder /opt/venv /opt/venv
 
-# Expose the port that FastAPI will run on
+# Copy only necessary app files
+COPY app/ ./app/
+COPY fastapi_wrapper.py .  # Adjust depending on your entry file
+COPY static/ ./static/     # If you have static files
+
+# Expose the FastAPI port
 EXPOSE 5000
 
-# Command to run the app using Gunicorn with Uvicorn workers
+# Command to run the FastAPI app with Gunicorn and Uvicorn workers
 CMD ["gunicorn", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "fastapi_wrapper:app", "--host", "0.0.0.0", "--port", "5000"]
