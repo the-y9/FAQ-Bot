@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FAQ Bot with Cosine Visualization</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #4CAF50;
+      font-size: 3rem;
+    }
+    .container {
+      display: flex;
+      gap: 30px;
+      max-width: 1000px;
+      margin: auto;
+      margin-top: 30px;
+    }
+    .left, .right {
+      flex: 1;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      font-size: 1.2rem;
+    }
+    button {
+      margin-top: 10px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #answer {
+      margin-top: 20px;
+      font-size: 1.2rem;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .insights {
+      margin-top: 40px;
+      font-size: 0.95rem;
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>FAQ Bot with Cosine Similarity Visualization</h1>
+  <div class="container">
+    <div class="left">
+      <label for="question"><strong>Ask your question:</strong></label>
+      <input type="text" id="question" placeholder="Type your question here..." />
+      <button onclick="getAnswer()">Get Answer</button>
+      <div id="answer"></div>
+      <div class="insights">
+        <h3>ℹ️ Embedding Visualization</h3>
+        <p>This plot compares a query to its matched entry using embeddings.</p>
+        <ul>
+          <li>🔵 <strong>Blue Arrow</strong>: User query vector</li>
+          <li>🔴 <strong>Red Arrow</strong>: Matched FAQ vector</li>
+          <li><strong>Cosine Similarity</strong>: Closer to 1 means more similar</li>
+          <li><strong>Length = Confidence</strong>: Longer means stronger match</li>
+        </ul>
+      </div>
+    </div>
+    <div class="right">
+      <h3>Cosine Similarity Plot</h3>
+      <img id="cosine-plot" src="" alt="Cosine Similarity Plot" />
+    </div>
+  </div>
+
+  <script>
+    async function getAnswer() {
+      const question = document.getElementById("question").value;
+      if (!question) return;
+
+      // Call FastAPI backend
+      const response = await fetch("/api/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question })
+      });
+
+      const data = await response.json();
+      document.getElementById("answer").innerText = "Answer: " + data.answer;
+
+      if (data.image_base64) {
+        document.getElementById("cosine-plot").src = "data:image/png;base64," + data.image_base64;
+      } else {
+        document.getElementById("cosine-plot").src = "";
+      }
+    }
+  </script>
+</body>
+</html>
