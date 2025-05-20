@@ -1,1 +1,1 @@
-web: python gradio_wrapper.py
+web: python fastapi_wrapper.py
