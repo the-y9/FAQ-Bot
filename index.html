@@ -3,7 +3,204 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="style.css" />
+  <!-- <link rel="stylesheet" href="static/style.css" /> -->
+   <style>
+    /* General styles for the body and other elements */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+:root {
+    --primary-color: #2e7d32;
+    --primary-hover: #1b5e20;
+    --background-color: #f9fafb;
+    --text-color: #2c2c2c;
+    --border-color: #e0e0e0;
+    --card-bg: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.08);
+    --light-shadow: rgba(0, 0, 0, 0.03);
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--background-color);
+    margin: 0;
+    padding: 20px;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.container {
+    display: flex;
+    gap: 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+    justify-content: space-between;
+    flex-wrap: wrap;  /* Allows items to wrap in smaller screens */
+}
+
+.left, .right {
+    flex: 1;
+}
+
+/* Container for input form */
+.input-container {
+    margin-top: 5px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px var(--light-shadow);
+    width: 100%;
+    box-sizing: border-box; /* Ensures the padding doesn't affect the width */
+}
+
+/* Make input field responsive */
+input[type="text"] {
+    width: 100%;  /* Ensures the input takes up the full width of its parent */
+    max-width: 100%; /* Prevents the input from growing beyond the container's width */
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border-color);
+    font-size: 1rem;
+    background-color: #fff;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box; /* Includes padding in width calculation */
+}
+
+input[type="text"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+button {
+    margin-top: 14px;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 14px 22px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 2px 6px var(--shadow-color);
+}
+
+button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+#answer {
+    margin-top: 24px;
+    font-size: 1.1rem;
+}
+
+.loading {
+    font-size: 1.1rem;
+    color: var(--primary-color);
+}
+
+img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-top: 5px;
+    background: var(--card-bg);
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.insights {
+    margin-top: 20px;
+    font-size: 1rem;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px var(--light-shadow);
+    margin-bottom: 30px;
+}
+
+/* Media Queries for responsiveness */
+
+/* For small screens like mobile (up to 480px wide) */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.8rem;  /* Smaller font size for headings */
+    }
+
+    .container {
+        flex-direction: column;  /* Stack the left and right sections */
+        gap: 20px;  /* Reduced gap */
+    }
+
+    .left, .right {
+        flex: none;  /* Let each section take full width */
+        width: 100%;  /* Full width for each section */
+    }
+
+    .input-container {
+        padding: 15px;  /* Reduced padding */
+    }
+
+    input[type="text"] {
+        font-size: 0.9rem;  /* Smaller font size for input */
+        padding: 12px 14px;  /* Reduced padding */
+    }
+
+    button {
+        width: 100%;  /* Button takes full width */
+        padding: 12px 16px;  /* Adjust padding */
+    }
+
+    .insights {
+        padding: 15px;  /* Reduced padding in insights section */
+    }
+}
+
+/* For larger screens (tablets, 768px and up) */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;  /* Smaller font size */
+    }
+
+    .container {
+        flex-direction: column;  /* Stack the left and right sections */
+        gap: 24px;
+    }
+
+    .left, .right {
+        flex: none;  /* Let each section take full width */
+        width: 100%;  /* Full width for each section */
+    }
+
+    .input-container {
+        padding: 18px;  /* Adjust padding */
+    }
+
+    input[type="text"] {
+        font-size: 0.95rem;  /* Slightly smaller input font */
+        padding: 13px 15px;  /* Adjust padding */
+    }
+
+    button {
+        width: 100%;  /* Full width for button */
+        padding: 13px 18px;  /* Adjust padding */
+    }
+
+    .insights {
+        padding: 18px;  /* Adjust padding */
+    }
+}
+
+   </style>
   <title>FAQ Bot with Cosine Visualization</title>
   <script>
     fetch("https://faq-bot-u90z.onrender.com/", {
@@ -55,8 +252,105 @@
       </div>
     </div>
   </main>
+<script>
+    let loading = false;
+const BASE_URL = "http://127.0.0.1:5000";
+// const BASE_URL = "https://faq-bot-u90z.onrender.com"
 
-  <script src="script.js"></script>
+async function getAnswer() {
+    const questionInput = document.getElementById("question");
+    const loadingIndicator = document.getElementById("loading");
+    const answerElement = document.getElementById("answer");
+    const cosinePlotElement = document.getElementById("cosine-plot");
+
+    const question = questionInput.value;
+    if (!question) return;
+
+    answerElement.innerText = "Bot: ";
+    cosinePlotElement.src = "";
+
+    // Show loading indicator
+    loadingIndicator.style.display = "block";
+    loading = true;
+
+    try {
+        // Get answer from backend
+        const answerData = await fetchAnswer(question);
+        answerElement.innerText = "Bot: " + answerData.answer;
+
+        // Get projections and visualization
+        fetchProjections(answerData.user_embedding, answerData.matched_embedding)
+            .then(projectionData => {
+                return fetchVisualization(
+                    projectionData.user_proj,
+                    projectionData.rotated_vec,
+                    projectionData.cos_sim,
+                    projectionData.angle_deg,
+                    cosinePlotElement
+                );
+            })
+            .catch(error => {
+                console.error("Plot Error:", error);
+            });
+
+    } catch (error) {
+        console.error("Error:", error);
+        answerElement.innerText = "Error: " + error.message;
+    } finally {
+        // Hide loading indicator
+        loadingIndicator.style.display = "none";
+        loading = false;
+    }
+}
+
+async function fetchAnswer(question) {
+    const response = await fetch(`${BASE_URL}/ask`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    }
+
+    return await response.json();
+}
+
+async function fetchProjections(userEmbedding, matchedEmbedding) {
+    const response = await fetch(`${BASE_URL}/projections`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_embedding: userEmbedding, matched_embedding: matchedEmbedding })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    }
+
+    return await response.json();
+}
+
+async function fetchVisualization(userProj, rotatedVec, cosSim, angleDeg, cosinePlotElement) {
+    const response = await fetch(`${BASE_URL}/visualization`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_proj: userProj, rotated_vec: rotatedVec, cos_sim: cosSim, angle_deg: angleDeg })
+    });
+
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    }
+
+    const imageBlob = await response.blob();
+    const imageUrl = URL.createObjectURL(imageBlob);
+
+    // Display the visualization image
+    cosinePlotElement.src = imageUrl;
+}
+
+</script>
+  <!-- <script src="static/script.js"></script> -->
 
 </body>
 </html>
