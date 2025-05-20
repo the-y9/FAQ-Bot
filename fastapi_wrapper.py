@@ -24,7 +24,7 @@ bot = FAQBot()  # Initialize bot once
 
 @app.get("/")
 async def root():
-    with open(os.path.join("static", "index.html")) as f:
+    with open(os.path.join("frontend", "index.html")) as f:
         return f.read()
     return {"message": "Welcome to the FAQ Bot API! Use /ask to ask a question."}
 # Pydantic model for request
