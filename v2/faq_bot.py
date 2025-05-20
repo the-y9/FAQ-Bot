@@ -1,12 +1,8 @@
 # v2/faq_bot.py
-from sentence_transformers import SentenceTransformer, util
-from v2.faq_data import faq_data
+from sentence_transformers import util
+from v2.faq_data import faq_data, model
 from typing import TypedDict
 from torch import Tensor
-from v2.viz_utils import visualize_embeddings_cosine
-
-# Initialize the SentenceTransformer model
-model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Define a TypedDict to specify the structure of FAQ state
 class FAQState(TypedDict):
@@ -40,14 +36,6 @@ def match_faq(state: FAQState) -> FAQState:
     # Get the index of the FAQ with the highest similarity score
     best_idx = max(range(len(scores)), key=lambda i: scores[i])
     best_score = scores[best_idx]
-
-    # OPTIONAL: Visualize user vs match
-    visualize_embeddings_cosine(
-    user_embedding=user_embedding,
-    matched_embedding=faq_data[best_idx]["embedding"],
-    labels=["User Input", "Matched Question"]
-)
-
     
     # If the best score is above a threshold (0.6 here), return the corresponding answer
     if best_score >= 0.3:
@@ -55,7 +43,7 @@ def match_faq(state: FAQState) -> FAQState:
     else:
         answer = "Sorry, I couldn't find an answer to that question. Type 'exit' or 'quit' to end the conversation."
 
-    return {"question": user_question, "answer": answer}, user_embedding, faq_data[best_idx]["embedding"] # matched_embedding
+    return {"question": user_question, "answer": answer}, user_embedding, faq_data[best_idx]["embedding"], best_score # matched_embedding
 
 # FAQBot class for handling interactions
 class FAQBot:
@@ -66,5 +54,5 @@ class FAQBot:
     def get_answer(self, user_input: str) -> str:
         # Ensure the state is typed correctly as FAQState
         state: FAQState = {"question": user_input, "answer": ""}
-        chat, user_embedding, matched_embedding = match_faq(state)
-        return chat, user_embedding, matched_embedding
+        chat, user_embedding, matched_embedding, score = match_faq(state)
+        return chat, user_embedding, matched_embedding, score

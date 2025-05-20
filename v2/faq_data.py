@@ -10,8 +10,11 @@ CACHE_DIR = "./embeddings_cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 CACHE_PATH = os.path.join(CACHE_DIR, "faq_embeddings.pkl")
 
+# Initialize the SentenceTransformer model
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
 # Generate hash based on question texts to detect changes
-def get_data_hash(data):
+def get_data_hash(data, model=model):
     questions = [entry["q"] for entry in data]
     return hashlib.md5("".join(questions).encode()).hexdigest()
 
@@ -28,7 +31,7 @@ def load_or_create_embeddings(data):
 
     # If no cache or data changed → regenerate
     print("Generating new embeddings...")
-    model = SentenceTransformer("all-MiniLM-L6-v2")
+    # model = SentenceTransformer("all-MiniLM-L6-v2")
     questions = [entry["q"] for entry in data]
     embeddings = model.encode(questions, convert_to_tensor=True)
 

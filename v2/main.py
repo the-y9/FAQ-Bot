@@ -18,7 +18,7 @@ def main():
             break
         
         # Get the bot's response
-        chat, user_embedding, matched_embedding = bot.get_answer(user_input)
+        chat, user_embedding, matched_embedding, score = bot.get_answer(user_input)
         answer = chat["answer"]
         print("Bot:", answer)  # Output the bot's response
 
