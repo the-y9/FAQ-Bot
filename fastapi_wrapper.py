@@ -11,7 +11,6 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 from PIL import Image
 import uvicorn
-from fastapi.staticfiles import StaticFiles
 
 bot = FAQBot()  # Initialize bot once
 
@@ -23,7 +22,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 
 @app.get("/", response_class=HTMLResponse)
