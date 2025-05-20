@@ -47,6 +47,7 @@ h1 {
 
 /* Container for input form */
 .input-container {
+    margin-top: 5px;
     background-color: var(--card-bg);
     padding: 20px;
     border-radius: 12px;
@@ -105,7 +106,7 @@ button:hover {
 img {
     max-width: 100%;
     border-radius: 12px;
-    margin-top: 20px;
+    margin-top: 5px;
     background: var(--card-bg);
     box-shadow: 0 4px 12px var(--shadow-color);
 }

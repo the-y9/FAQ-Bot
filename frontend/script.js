@@ -1,6 +1,6 @@
 let loading = false;
-const BASE_URL = "http://127.0.0.1:5000";
-// const BASE_URL = "https://faq-bot-u90z.onrender.com"
+// const BASE_URL = "http://127.0.0.1:5000";
+const BASE_URL = "https://faq-bot-u90z.onrender.com"
 
 async function getAnswer() {
     const questionInput = document.getElementById("question");
@@ -12,6 +12,7 @@ async function getAnswer() {
     if (!question) return;
 
     answerElement.innerText = "Bot: ";
+    cosinePlotElement.src = "";
 
     // Show loading indicator
     loadingIndicator.style.display = "block";
