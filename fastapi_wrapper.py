@@ -3,7 +3,7 @@ import os
 from typing import List
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel
 from v2.faq_bot import FAQBot
 from v2.viz_utils import get_projections_cosine, plot_embeddings_cosine
@@ -11,6 +11,9 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 from PIL import Image
 import uvicorn
+from fastapi.staticfiles import StaticFiles
+
+bot = FAQBot()  # Initialize bot once
 
 app = FastAPI(title="FAQ Bot API with Cosine Similarity")
 app.add_middleware(
@@ -20,12 +23,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-bot = FAQBot()  # Initialize bot once
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
-@app.get("/")
+
+@app.get("/", response_class=HTMLResponse)
 async def root():
-    # with open(os.path.join("frontend", "index.html")) as f:
-    #     return f.read()
+    with open(os.path.join("frontend", "index.html"), 'r', encoding='utf-8', errors='ignore') as f:
+        return f.read()
     return {"message": "Welcome to the FAQ Bot API! Use /ask to ask a question."}
 # Pydantic model for request
 class QuestionRequest(BaseModel):
@@ -97,5 +101,5 @@ async def get_visualization(payload: VisualizationRequest):
         raise HTTPException(status_code=500, detail=f"Visualization error: {e}")
 
 # # # Run with: uvicorn fastapi_app:app --host 0.0.0.0
-# if __name__ == "__main__":
-#     uvicorn.run("fastapi_wrapper:app", host="127.0.0.1", port=5000, reload=True)
+if __name__ == "__main__":
+    uvicorn.run("fastapi_wrapper:app", host="127.0.0.1", port=5000, reload=True)
