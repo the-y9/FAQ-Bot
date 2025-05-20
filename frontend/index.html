@@ -202,7 +202,7 @@ img {
 
    </style>
   <title>FAQ Bot with Cosine Visualization</title>
-  <script>
+  <!-- <script>
     fetch("https://faq-bot-u90z.onrender.com/", {
       method: "GET",
       mode: "no-cors"
@@ -211,7 +211,7 @@ img {
     }).catch((err) => {
       console.log("Ping error:", err);
     });
-  </script>
+  </script> -->
 </head>
 <body>
 
@@ -254,8 +254,8 @@ img {
   </main>
 <script>
     let loading = false;
-const BASE_URL = "http://127.0.0.1:5000";
-// const BASE_URL = "https://faq-bot-u90z.onrender.com"
+// const BASE_URL = "http://127.0.0.1:5000";
+const BASE_URL = "https://faq-bot-u90z.onrender.com"
 
 async function getAnswer() {
     const questionInput = document.getElementById("question");
