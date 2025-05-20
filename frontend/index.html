@@ -5,18 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" href="style.css" />
   <title>FAQ Bot with Cosine Visualization</title>
- 
+ <script>
+  fetch("https://faq-bot-u90z.onrender.com/", {
+    method: "GET",
+    mode: "no-cors"
+  }).then(() => {
+    console.log("Early cold start ping sent.");
+  }).catch((err) => {
+    console.log("Ping error:", err);
+  });
+</script>
+
 </head>
 <body>
 
   <h1>FAQ Bot with Cosine Similarity Visualization</h1>
   <div class="container">
     <div class="left">
-      <label for="question"><strong>Ask your question:</strong></label>
-      <input type="text" id="question" placeholder="Type your question here..." />
-      <button onclick="getAnswer()">Get Answer</button>
-      <div id="answer"></div>
-      <div class="insights">
+        <div>
+            <label for="question"><strong>Ask your question:</strong></label>
+            <input type="text" id="question" placeholder="Type your question here..." />
+            <button onclick="getAnswer()">Get Answer</button>
+            <div id="loading" style="display: none;">Loading...</div>
+            <div id="answer"></div>
+        </div>
+    <div class="insights">
         <h3>ℹ️ Embedding Visualization</h3>
         <p>This plot compares a query to its matched entry using embeddings.</p>
         <ul>

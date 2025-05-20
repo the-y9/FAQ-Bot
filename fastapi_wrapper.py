@@ -24,8 +24,8 @@ bot = FAQBot()  # Initialize bot once
 
 @app.get("/")
 async def root():
-    # with open(os.path.join("static", "index.html")) as f:
-    #     return f.read()
+    with open(os.path.join("static", "index.html")) as f:
+        return f.read()
     return {"message": "Welcome to the FAQ Bot API! Use /ask to ask a question."}
 # Pydantic model for request
 class QuestionRequest(BaseModel):
@@ -96,6 +96,6 @@ async def get_visualization(payload: VisualizationRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Visualization error: {e}")
 
-# # Run with: uvicorn fastapi_app:app --host 0.0.0.0
-if __name__ == "__main__":
-    uvicorn.run("fastapi_wrapper:app", host="127.0.0.1", port=5000, reload=True)
+# # # Run with: uvicorn fastapi_app:app --host 0.0.0.0
+# if __name__ == "__main__":
+#     uvicorn.run("fastapi_wrapper:app", host="127.0.0.1", port=5000, reload=True)
