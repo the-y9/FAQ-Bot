@@ -3,69 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="style.css" />
   <title>FAQ Bot with Cosine Visualization</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #4CAF50;
-      font-size: 3rem;
-    }
-    .container {
-      display: flex;
-      gap: 30px;
-      max-width: 1000px;
-      margin: auto;
-      margin-top: 30px;
-    }
-    .left, .right {
-      flex: 1;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 2px solid #ccc;
-      font-size: 1.2rem;
-    }
-    button {
-      margin-top: 10px;
-      background-color: #4CAF50;
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    #answer {
-      margin-top: 20px;
-      font-size: 1.2rem;
-    }
-    img {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-top: 20px;
-      background: white;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .insights {
-      margin-top: 40px;
-      font-size: 0.95rem;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
-    }
-  </style>
+ 
 </head>
 <body>
 
@@ -93,27 +33,6 @@
     </div>
   </div>
 
-  <script>
-    async function getAnswer() {
-      const question = document.getElementById("question").value;
-      if (!question) return;
-
-      // Call FastAPI backend
-      const response = await fetch("/api/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question })
-      });
-
-      const data = await response.json();
-      document.getElementById("answer").innerText = "Answer: " + data.answer;
-
-      if (data.image_base64) {
-        document.getElementById("cosine-plot").src = "data:image/png;base64," + data.image_base64;
-      } else {
-        document.getElementById("cosine-plot").src = "";
-      }
-    }
-  </script>
+<script src="script.js"></script>
 </body>
 </html>
