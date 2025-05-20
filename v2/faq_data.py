@@ -3,7 +3,6 @@ import os
 import pickle
 import hashlib
 from sentence_transformers import SentenceTransformer
-import torch
 from v1.faq_data import faq_data
 
 # Cache directory

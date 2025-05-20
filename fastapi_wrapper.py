@@ -60,4 +60,4 @@ async def get_visualization(payload: QuestionRequest):
 
 # Run with: uvicorn fastapi_app:app --host 0.0.0.0
 if __name__ == "__main__":
-    uvicorn.run("fastapi_wrapper:app", host="127.0.0.1", reload=True)
+    uvicorn.run("fastapi_wrapper:app", host="0.0.0.0", reload=True)
