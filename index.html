@@ -201,6 +201,9 @@ img {
 }
 
    </style>
+  <style>
+    canvas { border: 1px solid #ccc; }
+  </style>
   <title>FAQ Bot with Cosine Visualization</title>
   <!-- <script>
     fetch("https://faq-bot-u90z.onrender.com/", {
@@ -254,27 +257,29 @@ img {
       </div>
 
       <div class="right">
-        <img id="cosine-plot" src="" alt="Cosine Similarity Plot" />
+        <!-- <img id="cosine-plot" src="" alt="Cosine Similarity Plot" /> -->
+        <canvas id="vectorCanvas" width="500" height="500"></canvas>
       </div>
     </div>
   </main>
+
 <script>
     let loading = false;
-// const BASE_URL = "http://127.0.0.1:5000";
-const BASE_URL = "https://faq-bot-u90z.onrender.com"
+const BASE_URL = "http://127.0.0.1:8000";
+// const BASE_URL = "https://faq-bot-u90z.onrender.com"
 
 async function getAnswer() {
     const questionInput = document.getElementById("question");
     const loadingIndicator = document.getElementById("loading");
     const answerElement = document.getElementById("answer");
-    const cosinePlotElement = document.getElementById("cosine-plot");
+    // const cosinePlotElement = document.getElementById("cosine-plot");
     const errorElement = document.getElementById("error");
 
     const question = questionInput.value;
     if (!question) return;
 
     answerElement.innerText = "Bot: ";
-    cosinePlotElement.src = "";
+    // cosinePlotElement.src = "";
     errorElement.innerText = "";
 
     // Show loading indicator
@@ -289,12 +294,12 @@ async function getAnswer() {
         // Get projections and visualization
         fetchProjections(answerData.user_embedding, answerData.matched_embedding)
             .then(projectionData => {
-                return fetchVisualization(
+                return createCanvas(
                     projectionData.user_proj,
                     projectionData.rotated_vec,
                     projectionData.cos_sim,
                     projectionData.angle_deg,
-                    cosinePlotElement
+                    // cosinePlotElement
                 );
             })
             .catch(error => {
@@ -355,11 +360,52 @@ async function fetchVisualization(userProj, rotatedVec, cosSim, angleDeg, cosine
     const imageUrl = URL.createObjectURL(imageBlob);
 
     // Display the visualization image
-    cosinePlotElement.src = imageUrl;
+    // cosinePlotElement.src = imageUrl;
+}
+
+function createCanvas(v1, v2, cosSim, angle) {
+  // Create and configure the canvas
+  const canvas = document.getElementById('vectorCanvas');
+  canvas.width = 400;
+  canvas.height = 400;
+  canvas.style.border = '1px solid #ccc';
+
+  const ctx = canvas.getContext('2d');
+  const origin = { x: canvas.width / 2, y: canvas.height / 2 };
+  ctx.translate(origin.x, origin.y);
+    const scale = 150;
+    
+  // Draw vector from origin
+  function drawVector(v, color, label) {
+    const [x, y] = v;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(x * scale, -y * scale); // Flip Y for math coords
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Label near the tip
+    ctx.font = '14px Arial';
+    ctx.fillStyle = color;
+    ctx.fillText(label, x * scale + 5, -y * scale + 5);
+  }
+  // Draw vectors
+  drawVector(v1, 'red', 'Query');
+  drawVector(v2, 'blue', 'Retrieved');
+
+  // Display angle and cosine similarity
+  ctx.fillStyle = 'black';
+  ctx.font = '14px Arial';
+  ctx.fillText(`Angle: ${angle.toFixed(2)}°`, -origin.x + 10, -origin.y + 20);
+  ctx.fillText(`Cosine Similarity: ${cosSim.toFixed(3)}`, -origin.x + 10, -origin.y + 40);
+
+  return canvas;
 }
 
 </script>
   <!-- <script src="static/script.js"></script> -->
+
 
 </body>
 </html>
