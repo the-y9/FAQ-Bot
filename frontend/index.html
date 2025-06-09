@@ -202,9 +202,10 @@ img {
 
    </style>
   <style>
-    canvas { border: 1px solid #ccc; }
+    canvas { width: 400px; height: 200px; border: 1px solid #ccc; }
   </style>
   <title>FAQ Bot with Cosine Visualization</title>
+  <script src="https://cdn.jsdelivr.net/npm/mathjs@11.11.2/lib/browser/math.js"></script>
   <!-- <script>
     fetch("https://faq-bot-u90z.onrender.com/", {
       method: "GET",
@@ -258,7 +259,7 @@ img {
 
       <div class="right">
         <!-- <img id="cosine-plot" src="" alt="Cosine Similarity Plot" /> -->
-        <canvas id="vectorCanvas" width="500" height="500"></canvas>
+        <canvas id="vectorCanvas"></canvas>
       </div>
     </div>
   </main>
@@ -290,21 +291,15 @@ async function getAnswer() {
         // Get answer from backend
         const answerData = await fetchAnswer(question);
         answerElement.innerText = "Bot: " + answerData.answer;
-
-        // Get projections and visualization
-        fetchProjections(answerData.user_embedding, answerData.matched_embedding)
-            .then(projectionData => {
+        
+        const projectionData = getProjectionsCosine(answerData.user_embedding, answerData.matched_embedding)
                 return createCanvas(
                     projectionData.user_proj,
                     projectionData.rotated_vec,
                     projectionData.cos_sim,
                     projectionData.angle_deg,
-                    // cosinePlotElement
                 );
-            })
-            .catch(error => {
-                console.error("Plot Error:", error);
-            });
+           
 
     } catch (error) {
         console.error("Error:", error);
@@ -317,6 +312,7 @@ async function getAnswer() {
     }
 }
 
+// calls server 
 async function fetchAnswer(question) {
     const response = await fetch(`${BASE_URL}/ask`, {
         method: "POST",
@@ -331,44 +327,46 @@ async function fetchAnswer(question) {
     return await response.json();
 }
 
-async function fetchProjections(userEmbedding, matchedEmbedding) {
-    const response = await fetch(`${BASE_URL}/projections`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_embedding: userEmbedding, matched_embedding: matchedEmbedding })
-    });
+// async function fetchProjections(userEmbedding, matchedEmbedding) {
+//     const response = await fetch(`${BASE_URL}/projections`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ user_embedding: userEmbedding, matched_embedding: matchedEmbedding })
+//     });
 
-    if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
+//     if (!response.ok) {
+//         throw new Error(`Error: ${response.status} - ${response.statusText}`);
+//     }
 
-    return await response.json();
-}
+//     return await response.json();
+// }
 
-async function fetchVisualization(userProj, rotatedVec, cosSim, angleDeg, cosinePlotElement) {
-    const response = await fetch(`${BASE_URL}/visualization`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_proj: userProj, rotated_vec: rotatedVec, cos_sim: cosSim, angle_deg: angleDeg })
-    });
+// async function fetchVisualization(userProj, rotatedVec, cosSim, angleDeg, cosinePlotElement) {
+//     const response = await fetch(`${BASE_URL}/visualization`, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ user_proj: userProj, rotated_vec: rotatedVec, cos_sim: cosSim, angle_deg: angleDeg })
+//     });
 
-    if (!response.ok) {
-        throw new Error(`Error: ${response.status} - ${response.statusText}`);
-    }
+//     if (!response.ok) {
+//         throw new Error(`Error: ${response.status} - ${response.statusText}`);
+//     }
 
-    const imageBlob = await response.blob();
-    const imageUrl = URL.createObjectURL(imageBlob);
+//     const imageBlob = await response.blob();
+//     const imageUrl = URL.createObjectURL(imageBlob);
 
-    // Display the visualization image
-    // cosinePlotElement.src = imageUrl;
-}
+//     // Display the visualization image
+//     // cosinePlotElement.src = imageUrl;
+// }
+
+// doesn't call server
 
 function createCanvas(v1, v2, cosSim, angle) {
   // Create and configure the canvas
   const canvas = document.getElementById('vectorCanvas');
   canvas.width = 400;
-  canvas.height = 400;
-  canvas.style.border = '1px solid #ccc';
+  canvas.height = 200;
+  canvas.style.border = '5px solid #ccc';
 
   const ctx = canvas.getContext('2d');
   const origin = { x: canvas.width / 2, y: canvas.height / 2 };
@@ -401,6 +399,73 @@ function createCanvas(v1, v2, cosSim, angle) {
   ctx.fillText(`Cosine Similarity: ${cosSim.toFixed(3)}`, -origin.x + 10, -origin.y + 40);
 
   return canvas;
+}
+
+function getProjectionsCosine(userEmbedding, matchedEmbedding) {
+    // Convert inputs to Float32Array if not already
+    userEmbedding = math.matrix(userEmbedding.map(Number));
+    matchedEmbedding = math.matrix(matchedEmbedding.map(Number));
+
+    // Normalize vectors to unit length
+    const userNorm = math.norm(userEmbedding);
+    const matchNorm = math.norm(matchedEmbedding);
+
+    const userVec = math.divide(userEmbedding, userNorm);
+    const matchVec = math.divide(matchedEmbedding, matchNorm);
+
+    // Cosine similarity
+    const cosSim = math.dot(userVec, matchVec);
+
+    // Angle in degrees
+    const angleDeg = math.unit(Math.acos(cosSim), 'rad').toNumber('deg');
+
+    // Choose user_vec as x-axis
+    const xAxis = userVec;
+
+    // Generate orthogonal y-axis
+    let yAxis;
+    const dim = xAxis._data.length;
+    if (dim > 1) {
+        yAxis = math.identity(dim)._data[1];
+    } else {
+        yAxis = [0.0];
+    }
+
+    // Make yAxis orthogonal to xAxis
+    const dotXY = math.dot(yAxis, xAxis);
+    yAxis = math.subtract(yAxis, math.multiply(dotXY, xAxis));
+    yAxis = math.divide(yAxis, math.norm(yAxis));
+
+    // Project vectors to 2D
+    const userProj = [
+        math.dot(userVec, xAxis),
+        math.dot(userVec, yAxis)
+    ];
+    const matchProj = [
+        math.dot(matchVec, xAxis),
+        math.dot(matchVec, yAxis)
+    ];
+
+    // Rotate userProj by angleDeg
+    const angleRad = math.unit(angleDeg, 'deg').toNumber('rad');
+    const rotationMatrix = [
+        [Math.cos(angleRad), -Math.sin(angleRad)],
+        [Math.sin(angleRad),  Math.cos(angleRad)]
+    ];
+    const rotatedVec = math.multiply(rotationMatrix, userProj);
+
+    // Rescale rotated vector to match matchProj's norm
+    const matchProjNorm = math.norm(matchProj);
+    const rotatedNorm = math.norm(rotatedVec);
+    const scaledRotatedVec = math.multiply(rotatedVec, matchProjNorm / rotatedNorm);
+
+    return {
+        user_proj: userProj,
+        match_proj: matchProj,
+        rotated_vec: scaledRotatedVec,
+        cos_sim: cosSim,
+        angle_deg: angleDeg
+    };
 }
 
 </script>

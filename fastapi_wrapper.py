@@ -100,4 +100,4 @@ async def get_visualization(payload: VisualizationRequest):
 
 # # # Run with: uvicorn fastapi_app:app --host 0.0.0.0
 if __name__ == "__main__":
-    uvicorn.run("fastapi_wrapper:app", host="127.0.0.1", port=5000, reload=True)
+    uvicorn.run("fastapi_wrapper:app", host="127.0.0.1", port=8000, reload=True)
